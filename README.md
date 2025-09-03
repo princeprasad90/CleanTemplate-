@@ -1,6 +1,6 @@
 # CleanTemplate
 
-This repository provides a minimal .NET 8 microservice template following a clean architecture approach with simple event sourcing backed by Entity Framework Core.
+This repository provides a minimal .NET 8 microservice template following a clean architecture approach with simple event sourcing backed by Entity Framework Core, including optional snapshotting to speed up aggregate rehydration.
 
 ## Projects
 
