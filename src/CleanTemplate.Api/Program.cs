@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EventDbContext>(opt => opt.UseInMemoryDatabase("events"));
 builder.Services.AddScoped<IEventStore, EfCoreEventStore>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<ProductService>();
 
 var app = builder.Build();
 
