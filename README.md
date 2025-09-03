@@ -21,3 +21,7 @@ dotnet run --project src/CleanTemplate.Api
 ```
 
 The API exposes sample endpoints to create orders, add items, and list stored events.
+
+## Documentation
+
+See [docs/README.md](docs/README.md) for an architecture overview, request flow diagram, and details about the automatic database seed that runs on startup.
