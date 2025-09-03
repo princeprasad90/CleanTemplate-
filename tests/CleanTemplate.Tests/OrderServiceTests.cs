@@ -1,3 +1,4 @@
+using Xunit;
 using CleanTemplate.Application.Interfaces;
 using CleanTemplate.Application.Services;
 using CleanTemplate.Domain.Events;
