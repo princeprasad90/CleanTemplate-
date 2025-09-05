@@ -51,33 +51,34 @@ public class EfCoreEventStore : IEventStore
         return events;
     }
 
-    public async Task SaveSnapshotAsync<T>(Guid aggregateId, T snapshot, CancellationToken cancellationToken = default)
+    public async Task SaveSnapshotAsync<T>(Guid aggregateId, T state, CancellationToken cancellationToken = default)
     {
         var entity = new SnapshotEntity
         {
             Id = Guid.NewGuid(),
             AggregateId = aggregateId,
-            Type = snapshot!.GetType().AssemblyQualifiedName!,
-            Data = JsonSerializer.Serialize(snapshot, snapshot.GetType()),
+            AggregateType = state!.GetType().AssemblyQualifiedName!,
+            State = JsonSerializer.Serialize(state, state.GetType()),
             CreatedOn = DateTime.UtcNow
         };
         _context.Snapshots.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<(T? Snapshot, IEnumerable<IEvent> Events)> GetWithSnapshotAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default)
+    public async Task<(Snapshot<T>? Snapshot, IEnumerable<IEvent> Events)> GetWithSnapshotAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default)
     {
         var snapshotEntity = await _context.Snapshots
             .Where(s => s.AggregateId == aggregateId)
             .OrderByDescending(s => s.CreatedOn)
             .FirstOrDefaultAsync(cancellationToken);
 
-        T? snapshot = default;
+        Snapshot<T>? snapshot = null;
         DateTime? from = null;
         if (snapshotEntity != null)
         {
-            var type = Type.GetType(snapshotEntity.Type)!;
-            snapshot = (T)JsonSerializer.Deserialize(snapshotEntity.Data, type)!;
+            var type = Type.GetType(snapshotEntity.AggregateType)!;
+            var state = (T)JsonSerializer.Deserialize(snapshotEntity.State, type)!;
+            snapshot = new Snapshot<T>(snapshotEntity.AggregateId, snapshotEntity.AggregateType, state);
             from = snapshotEntity.CreatedOn;
         }
 
